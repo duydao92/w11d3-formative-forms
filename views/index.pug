@@ -1,15 +1,16 @@
-doctype html
-html(lang="en")
-    head
-        meta(charset="UTF-8")
-        meta(http-equiv="X-UA-Compatible", content="IE=edge")
-        meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title Document
-    body
-        table
-            thead
-                tr
-                    each user in users
-                        th user
-            tbody
-                tr
+extends layout
+block content
+    h2 Existing Users
+    table
+        thead
+            tr
+                th id
+                th First Name
+                th Last Name
+                th Email
+                th Age
+                th Favorite Beatle
+                th Likes Ice Cream
+            tr
+                each user in users
+                    th user
