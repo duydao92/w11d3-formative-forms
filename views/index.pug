@@ -10,6 +10,10 @@ block content
             th Age
             th Favorite Beatle
             th Likes Ice Cream
-            //- tr
-            //-     each user in users
-            //-         th user
+        tr
+            each user in users
+                td= user.id
+                td #{user.firstName}
+                td #{user.lastName}
+                td #{user.email}
+    

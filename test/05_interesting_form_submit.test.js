@@ -2,17 +2,17 @@ const app = require("../index");
 const request = require("supertest");
 const expect = require("chai").expect;
 var cheerio = require("cheerio");
-
+​
 describe("submit-interesting", () => {
   let $, token, cookies;
   before(async () => {
     const getRes = await request(app).get("/create-interesting");
     cookies = getRes.headers["set-cookie"];
     const getText = cheerio.load(getRes.text);
-
+​
     token = getText("input[type='hidden'][name='_csrf']").attr("value");
   });
-
+​
   const submit = async formData => {
     const res = await request(app)
       .post("/create-interesting")
@@ -24,7 +24,7 @@ describe("submit-interesting", () => {
       });
     $ = cheerio.load(res.text);
   };
-
+​
   describe("when none of the fields are filled", () => {
     before(async () => {
       await submit({});
@@ -33,7 +33,7 @@ describe("submit-interesting", () => {
       expect($("p").text()).to.equal("The following errors were found:");
       expect($("ul").length).to.equal(1);
     });
-
+​
     it("renders li elements for each error message", () => {
       const messages = $("li");
       expect(messages.eq(0).text()).to.equal("Please provide a first name.");
@@ -42,7 +42,7 @@ describe("submit-interesting", () => {
       expect(messages.eq(3).text()).to.equal("Please provide a password.");
     });
   });
-
+​
   describe("when only the firstName field is filled", () => {
     let firstName = "Bethany";
     before(async () => {
@@ -54,12 +54,12 @@ describe("submit-interesting", () => {
       expect(messages.eq(1).text()).to.equal("Please provide an email.");
       expect(messages.eq(2).text()).to.equal("Please provide a password.");
     });
-
+​
     it("prefills the firstName input value with the submitted firstName value", () => {
       expect($("input[name='firstName']").attr("value")).to.equal(firstName);
     });
   });
-
+​
   describe("when only the lastName field is filled", () => {
     let lastName = "Tree";
     before(async () => {
@@ -71,12 +71,12 @@ describe("submit-interesting", () => {
       expect(messages.eq(1).text()).to.equal("Please provide an email.");
       expect(messages.eq(2).text()).to.equal("Please provide a password.");
     });
-
+​
     it("prefills the lastName input value with the submitted lastName value", () => {
       expect($("input[name='lastName']").attr("value")).to.equal(lastName);
     });
   });
-
+​
   describe("when only the email field is filled", () => {
     let email = "be.tree@gmail.com";
     before(async () => {
@@ -88,12 +88,12 @@ describe("submit-interesting", () => {
       expect(messages.eq(1).text()).to.equal("Please provide a last name.");
       expect(messages.eq(2).text()).to.equal("Please provide a password.");
     });
-
+​
     it("prefills the email input value with the submitted email value", () => {
       expect($("input[name='email']").attr("value")).to.equal(email);
     });
   });
-
+​
   describe("when password and confirmedPassword fields do not match", () => {
     before(async () => {
       await submit({
@@ -111,7 +111,7 @@ describe("submit-interesting", () => {
       );
     });
   });
-
+​
   const formData = {
     firstName: "Millie",
     lastName: "Snopes",
@@ -122,7 +122,7 @@ describe("submit-interesting", () => {
     favoriteBeatle: "John",
     iceCream: "on"
   };
-
+​
   describe("age field", () => {
     it("renders an error message if age is not submitted", async () => {
       await submit({
@@ -132,7 +132,7 @@ describe("submit-interesting", () => {
       const messages = $("li");
       expect(messages.eq(0).text()).to.equal("age is required");
     });
-
+​
     it("renders an error message if age is not a number", async () => {
       await submit({
         ...formData,
@@ -141,7 +141,7 @@ describe("submit-interesting", () => {
       const messages = $("li");
       expect(messages.eq(0).text()).to.equal("age must be a valid age");
     });
-
+​
     it("renders an error message if age is greater than 120", async () => {
       await submit({
         ...formData,
@@ -150,7 +150,7 @@ describe("submit-interesting", () => {
       const messages = $("li");
       expect(messages.eq(0).text()).to.equal("age must be a valid age");
     });
-
+​
     it("renders an error message if age is less than 0", async () => {
       await submit({
         ...formData,
@@ -159,7 +159,7 @@ describe("submit-interesting", () => {
       const messages = $("li");
       expect(messages.eq(0).text()).to.equal("age must be a valid age");
     });
-
+​
     it("prefills the age input value with the submitted age value", async () => {
       await submit({
         ...formData,
@@ -170,7 +170,7 @@ describe("submit-interesting", () => {
       );
     });
   });
-
+​
   describe("favoriteBeatle field", () => {
     it("renders an error message if favoriteBeatle is not submitted", async () => {
       await submit({
@@ -180,7 +180,7 @@ describe("submit-interesting", () => {
       const messages = $("li");
       expect(messages.eq(0).text()).to.equal("favoriteBeatle is required");
     });
-
+​
     it("renders an error message if favoriteBeatle is not a valid member of the Beatles", async () => {
       await submit({
         ...formData,
@@ -191,30 +191,30 @@ describe("submit-interesting", () => {
         "favoriteBeatle must be a real Beatle member"
       );
     });
-
+​
     it("marks the submitted favoriteBeatle value as 'selected'", async () => {
       await submit({
         ...formData,
         email: null
       });
-
-      expect($("option[selected='selected']").attr("value")).to.equal(
+​
+      expect($("option[selected]").attr("value")).to.equal(
         formData.favoriteBeatle
       );
     });
   });
-
+​
   describe("when iceCream field is checked and there is an error with form", () => {
     it("marks the iceCream field as checked", async () => {
       await submit({
         ...formData,
         email: null
       });
-
+​
       expect($("input[type='checkbox']").attr("checked")).to.equal("checked");
     });
   });
-
+​
   describe("when all fields are filled correctly", () => {
     it("redirects user back to home page to see newly created user", async () => {
       await request(app)
@@ -227,31 +227,31 @@ describe("submit-interesting", () => {
         })
         .expect(302)
         .expect("Location", "/");
-
+​
       const homeRes = await request(app).get("/");
-
+​
       $ = cheerio.load(homeRes.text);
       const lastRowCells = $("tr:last-child td");
       // id colummn:
       expect(lastRowCells.eq(0).text()).to.equal(
         $("tbody tr").length.toString()
       );
-
+​
       // firstName column:
       expect(lastRowCells.eq(1).text()).to.equal(formData.firstName);
-
+​
       // lastName column:
       expect(lastRowCells.eq(2).text()).to.equal(formData.lastName);
-
+​
       // email column:
       expect(lastRowCells.eq(3).text()).to.equal(formData.email);
-
+​
       // age column:
       expect(lastRowCells.eq(4).text()).to.equal(formData.age.toString());
-
+​
       // favoriteBeatle column:
       expect(lastRowCells.eq(5).text()).to.equal(formData.favoriteBeatle);
-
+​
       // likes iceCream column:
       expect(lastRowCells.eq(6).text()).to.equal("true");
     });
