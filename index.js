@@ -2,6 +2,7 @@ const express = require("express");
 const csurf = require('csurf');
 const cookieParser = require('cookie-parser');
 const app = express();
+app.use(cookieParser());
 const port = process.env.PORT || 3000;
 
 var csrfProtection = csurf({ cookie: true });
@@ -15,9 +16,9 @@ app.get('/create', csrfProtection, async (req, res) => {
   res.render('create-form', { csrfToken: req.csrfToken() });
 });
 
-app.post('/create', csrfProtection, asynch (req, res) => {
+// app.post('/create', csrfProtection, asynch (req, res) => {
 
-});
+// });
 
 
 const users = [
