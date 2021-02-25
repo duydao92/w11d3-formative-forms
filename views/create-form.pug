@@ -1,23 +1,26 @@
 extends layout
 block content
-    form.pure-form(action='/create', method='post')
+    div
+        each error in errors
+            li= error
+    form.pure-form(action='/create' method='post')
         div
-            input(type='hidden', name='_csrf', value=csrfToken)
+            input(type='hidden' name='_csrf' value=csrfToken)
         div
             label First Name
-            input(type='text', name='firstName')
+            input(type='text' name='firstName')
         div
             label Last Name
-            input(type='text', name='lastName')
+            input(type='text' name='lastName')
         div
             label Email
-            input(type='email', name='email')
+            input(type='email' name='email')
         div
             label Password
-            input(type='password', name='password')
+            input(type='password' name='password')
         div
             label Confirm Password
-            input(type='password', name='confirmedPassword')
+            input(type='password' name='confirmedPassword')
         div
             label Submit
-            button(type='submit', name='submit')
+            input(type='submit' value='Create User')

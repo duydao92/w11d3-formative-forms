@@ -6,6 +6,7 @@ app.use(cookieParser());
 const port = process.env.PORT || 3000;
 
 var csrfProtection = csurf({ cookie: true });
+app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "pug");
 
 app.get("/", async (req, res) => {
@@ -13,12 +14,25 @@ app.get("/", async (req, res) => {
 });
 
 app.get('/create', csrfProtection, async (req, res) => {
-  res.render('create-form', { csrfToken: req.csrfToken() });
+  const errors = [];
+  res.render('create-form', { csrfToken: req.csrfToken(), errors });
 });
 
-// app.post('/create', csrfProtection, asynch (req, res) => {
+app.post('/create', csrfProtection, async (req, res) => {
+  console.log(req.body);
+  errorHandling(req.body)
+});
 
-// });
+function errorHandling (obj) {
+  let errors = [];
+  if(obj.password !== obj.confirmPassword){
+    errors.push('Passwords need to match!')
+  }
+  if(obj.firstName){
+    errors.push('Passwords need to match!')
+  }
+  return errors
+}
 
 
 const users = [
